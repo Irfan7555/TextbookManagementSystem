@@ -32,19 +32,16 @@ if os.path.exists("static/bg3.jpg"):
     # Load and encode the background image
     bg_image = base64.b64encode(open("static/bg3.jpg", "rb").read()).decode()
     
-    # Apply the CSS to the main content area
+    # Apply the CSS to both main content area and header using a single selector
     st.markdown(f"""
     <style>
-    [data-testid="stAppViewContainer"] {{
-        background-image: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)),
+    [data-testid="stAppViewContainer"], .stAppHeader {{
+        background-image: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)),
         url("data:image/jpg;base64,{bg_image}");
         background-size: 100%;  /* Adjust this to control the size */
-        
-       
     }}
     </style>
     """, unsafe_allow_html=True)
-
 # Inject the CSS into the Streamlit app
 st.markdown(hide_css, unsafe_allow_html=True)
 st.title("Librarian Dashboard")

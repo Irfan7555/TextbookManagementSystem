@@ -39,19 +39,16 @@ if os.path.exists("static/bg2.jpg"):
     # Load and encode the background image
     bg_image = base64.b64encode(open("static/bg2.jpg", "rb").read()).decode()
     
-    # Apply the CSS to the main content area
+    # Apply the CSS to both main content area and header using a single selector
     st.markdown(f"""
     <style>
-    [data-testid="stAppViewContainer"] {{
+    [data-testid="stAppViewContainer"], .stAppHeader {{
         background-image: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)),
         url("data:image/jpg;base64,{bg_image}");
         background-size: 100%;  /* Adjust this to control the size */
-        
-       
     }}
     </style>
     """, unsafe_allow_html=True)
-
 
 API_URL = "http://localhost:8000"
 
