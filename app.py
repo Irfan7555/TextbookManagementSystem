@@ -66,19 +66,6 @@ hide_css = """
 st.markdown(hide_css, unsafe_allow_html=True)
 
 # Hardcoded user data (in practice, this would be loaded from Excel)
-USERS = {
-    'students': {
-        'student1': {'password': 'pass123', 'student_id': 'STU001', 'name': 'John Doe'},
-        'student2': {'password': 'pass123', 'student_id': 'STU002', 'name': 'Jane Smith'}
-    },
-    'librarians': {
-        'librarian1': {'password': 'lib123', 'name': 'Mary Johnson'},
-        'librarian2': {'password': 'lib123', 'name': 'Robert Wilson'}
-    },
-    'admins': {
-        'admin1': {'password': 'admin123', 'name': 'Admin User'}
-    }
-}
 
 def load_user_data():
     """Load user data from Excel file"""
