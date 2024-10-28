@@ -1,6 +1,7 @@
 
 import streamlit as st
-import requests, base64, os 
+import requests, base64, os
+import pandas as pd
 
 hide_css = """
     <style>
@@ -104,8 +105,17 @@ def view_books():
     response = requests.get(f"{API_URL}/librarian/books")
     if response.status_code == 200:
         books = response.json()
-        for book in books:
-            st.write(f"ID: {book['book_id']}, Title: {book['title']}, Author: {book['author']}, Quantity: {book['quantity']}")
+        books_data = [
+        {
+            'book_id': book['book_id'],
+            'title': book['title'],
+            'author': book['author'],
+            'quantity': book['quantity']
+        }
+        for book in books
+    ]
+        df = pd.DataFrame(books_data)
+        st.table(df)
     else:
         st.error("Error retrieving books.")
 
