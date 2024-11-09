@@ -1,26 +1,37 @@
+# database.py
 import sqlite3
+from datetime import datetime
 
-DATABASE_PATH = "library.db"  # Specify your database path
+DATABASE_PATH = "library.db"
 
 def get_db_connection():
     conn = sqlite3.connect(DATABASE_PATH)
-    conn.row_factory = sqlite3.Row  # This allows access to columns by name
+    conn.row_factory = sqlite3.Row
     return conn
 
 def create_tables():
     conn = get_db_connection()
     cursor = conn.cursor()
-
-    # Create books table if it does not exist
+    
+    # Create categories table
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS categories (
+        name TEXT PRIMARY KEY
+    )
+    """)
+    
+    # Create books table with foreign key to categories
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS books (
         book_id TEXT PRIMARY KEY,
         title TEXT NOT NULL,
         author TEXT NOT NULL,
-        quantity INTEGER NOT NULL
+        category TEXT NOT NULL,
+        quantity INTEGER NOT NULL,
+        FOREIGN KEY (category) REFERENCES categories (name)
     )
     """)
-
+    
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS book_requests (
         request_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -32,14 +43,9 @@ def create_tables():
         FOREIGN KEY (book_id) REFERENCES books (book_id)
     )
     """)
-
-    # You can add more tables here as needed
-
+    
     conn.commit()
     conn.close()
 
 if __name__ == "__main__":
-    create_tables()  # Optional: This allows you to create tables by running this script directly
-
-
-
+    create_tables()
