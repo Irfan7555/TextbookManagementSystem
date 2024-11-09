@@ -60,18 +60,20 @@ st.write(f"Welcome, {username}!")
 tab1, tab2 = st.tabs(["Books", "My Requests"])
 
 # Helper functions
-def fetch_categories():
-    """Fetches all available categories from the backend API."""
-    response = requests.get(f"{API_URL}/librarian/categories")
+import streamlit as st
+import requests
+
+
+def fetch_books_by_category(selected_category):
+    """Fetches books based on category if provided; otherwise fetches all books."""
+    if selected_category and selected_category != "Select":
+        response = requests.get(f"{API_URL}/librarian/books/category/{selected_category}")
+    else:
+        response = requests.get(f"{API_URL}/librarian/books")
+    
     return response.json() if response.status_code == 200 else []
 
-def fetch_books(category=None):
-    """Fetches books based on category or all books if no category is provided."""
-    params = {"category": category} if category else {}
-    response = requests.get(f"{API_URL}/librarian/books", params=params)
-    return response.json() if response.status_code == 200 else []
-
-# Load initial books
+# Load initial books in tab1
 with tab1:
     st.header("Search Books")
     
@@ -89,20 +91,24 @@ with tab1:
         
         # Update filtered_books based on search query
         if search_button:
-            all_books = fetch_books()
+            all_books = fetch_books_by_category(None)  # Fetch all books
             st.session_state.filtered_books = [
                 book for book in all_books if search_query.lower() in book[search_type].lower()
             ]
     elif search_type == "category":
-        categories = fetch_categories()
+        # Fetch categories directly for dropdown
+        response = requests.get(f"{API_URL}/librarian/categories")
+        categories = response.json() if response.status_code == 200 else []
+        categories.insert(0, "Select")  # Add 'Select' as default
+
         selected_category = st.selectbox("Select Category", categories, key="category_select")
         
-        # Fetch books by category
-        if selected_category:
-            st.session_state.filtered_books = fetch_books(selected_category)
+        # Fetch books by selected category
+        if selected_category != "Select":
+            st.session_state.filtered_books = fetch_books_by_category(selected_category)
     
     # Display results
-    st.subheader(f"Books in {selected_category}" if search_type == "category" else "Search Results")
+    st.subheader(f"Books in {selected_category}" if search_type == "category" and selected_category != "Select" else "Search Results")
     if st.session_state.filtered_books:
         for book in st.session_state.filtered_books[:5]:  # Show top 5 results
             with st.expander(f"{book['title']} by {book['author']}"):
@@ -120,7 +126,6 @@ with tab1:
                         st.error("Failed to submit request.")
     else:
         st.info("No books found matching your search.")
-
 # My Requests Tab
 with tab2:
     st.header("My Requests")
@@ -137,9 +142,10 @@ with tab2:
                     if req.get('status', '').lower() == 'approved':
                         book_filename = "sample_book.pdf"
                         book_path = os.path.join('static', 'books', book_filename)
+                        button_key = f"download_btn_{req.get('request_id')}"
                         if os.path.exists(book_path):
                             with open(book_path, "rb") as file:
-                                st.download_button("Download Ebook", data=file, file_name=book_filename, mime="application/pdf")
+                                st.download_button("Download Ebook", data=file, file_name=book_filename, mime="application/pdf",key=button_key)
                         else:
                             st.error("Ebook file not found.")
         else:

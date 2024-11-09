@@ -33,6 +33,8 @@ if logout_btn:
         st.session_state.clear()
     st.switch_page("app.py")
 
+
+
 if os.path.exists("static/bg4.jpg"):
     # Load and encode the background image
     bg_image = base64.b64encode(open("static/bg4.jpg", "rb").read()).decode()
