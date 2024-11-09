@@ -7,9 +7,9 @@ import os
 # Hide default Streamlit menu
 hide_css = """
     <style>
-    .st-emotion-cache-j7qwjs.eczjsme15 {
+    .st-emotion-cache-j7qwjs.eczjsme15{
         display: none;
-    }
+    } 
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     .main > div {
@@ -90,7 +90,7 @@ def login():
     st.title("Textbook Management System")
     
     # Create two-column layout with more space for the image
-    col1, col2 = st.columns([1,2])
+    col1, col2 = st.columns([3,4])
     
     with col1:
         if os.path.exists("static/pmu1.png"):
