@@ -74,6 +74,7 @@ def fetch_books_by_category(selected_category):
     return response.json() if response.status_code == 200 else []
 
 # Load initial books in tab1
+# Load initial books in tab1
 with tab1:
     st.header("Search Books")
     
@@ -82,9 +83,9 @@ with tab1:
         st.session_state.filtered_books = []
 
     # Dropdown for search type
-    search_type = st.selectbox("Search by", ["title", "author", "category"], key="search_type")
+    search_type = st.selectbox("Search by", ["title", "author", "course"], key="search_type")  # Renamed "category" to "course"
 
-    # Search input and category filter
+    # Search input and course filter
     if search_type in ["title", "author"]:
         search_query = st.text_input("Search", "")
         search_button = st.button("Search")
@@ -95,20 +96,20 @@ with tab1:
             st.session_state.filtered_books = [
                 book for book in all_books if search_query.lower() in book[search_type].lower()
             ]
-    elif search_type == "category":
-        # Fetch categories directly for dropdown
+    elif search_type == "course":  # Renamed "category" to "course" here as well
+        # Fetch categories (courses) directly for dropdown
         response = requests.get(f"{API_URL}/librarian/categories")
         categories = response.json() if response.status_code == 200 else []
         categories.insert(0, "Select")  # Add 'Select' as default
 
-        selected_category = st.selectbox("Select Category", categories, key="category_select")
+        selected_course = st.selectbox("Select Course", categories, key="course_select")  # Renamed "category" to "course" in UI
         
-        # Fetch books by selected category
-        if selected_category != "Select":
-            st.session_state.filtered_books = fetch_books_by_category(selected_category)
+        # Fetch books by selected course (category)
+        if selected_course != "Select":
+            st.session_state.filtered_books = fetch_books_by_category(selected_course)
     
     # Display results
-    st.subheader(f"Books in {selected_category}" if search_type == "category" and selected_category != "Select" else "Search Results")
+    st.subheader(f"Books in {selected_course}" if search_type == "course" and selected_course != "Select" else "Search Results")
     if st.session_state.filtered_books:
         for book in st.session_state.filtered_books[:5]:  # Show top 5 results
             with st.expander(f"{book['title']} by {book['author']}"):
