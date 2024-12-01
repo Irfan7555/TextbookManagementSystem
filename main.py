@@ -134,28 +134,22 @@ def add_book(book: Book):
 
 
 @app.put("/librarian/update")
-def update_book(book: Book):
-    """Update book with category validation"""
+def update_book_quantity(book_id: str, quantity: int):
+    """Update only book quantity"""
     conn = get_db_connection()
     cursor = conn.cursor()
     try:
-        # Verify category exists if it's being changed
-        cursor.execute("SELECT name FROM categories WHERE name = ?", (book.category,))
-        if not cursor.fetchone():
-            raise HTTPException(status_code=400, detail="Invalid category")
-        
         cursor.execute(
-            "UPDATE books SET quantity = ?, category = ? WHERE book_id = ?", 
-            (book.quantity, book.category, book.book_id)
+            "UPDATE books SET quantity = ? WHERE book_id = ?", 
+            (quantity, book_id)
         )
         if cursor.rowcount == 0:
             raise HTTPException(status_code=404, detail="Book not found")
         
         conn.commit()
-        return {"message": "Book updated successfully"}
+        return {"message": "Book quantity updated successfully"}
     finally:
         conn.close()
-
 @app.delete("/librarian/remove/{book_id}")
 def remove_book(book_id: str):
     """Remove a book"""
